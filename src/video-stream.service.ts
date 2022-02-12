@@ -53,7 +53,7 @@ export class VideoStreamService {
             const webRtcTransport_options = {
                 listenIps:[{
                     ip:'0.0.0.0',
-                    announcedIp:'127.0.0.1'
+                    announcedIp:'18.185.99.237'
                 }],
                 enableUdp:true,
                 enableTcp:true,
