@@ -24,11 +24,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {cors:true,
     
     httpsOptions: {
-      cert: fs.readFileSync('server.crt'),
-      key: fs.readFileSync('privatekey.pem'),
+      ca: fs.readFileSync("ca_bundle.crt"),
+      key: fs.readFileSync("private.key"),
+      cert: fs.readFileSync("certificate.crt"),
       rejectUnauthorized:false
     }});
 
-  await app.listen(443);
+  await app.listen(8443);
 }
 bootstrap();
