@@ -22,9 +22,11 @@ export class SocketAdapter extends IoAdapter {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {cors:true,
+    
     httpsOptions: {
-      cert: fs.readFileSync('./server.crt'),
-      key: fs.readFileSync('./privatekey.pem')
+      cert: fs.readFileSync('server.crt'),
+      key: fs.readFileSync('privatekey.pem'),
+      rejectUnauthorized:false
     }});
 
   await app.listen(443);
