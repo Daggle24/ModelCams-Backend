@@ -23,9 +23,13 @@ export class VideoStreamGateway implements OnGatewayInit, OnGatewayConnection, O
 
     async handleConnection(client: Socket, ...args:any[]){
         this.logger.log('Client connected:' + client.id);
-        this.server.emit('connection-success',{clientId:client.id});
+        this.server.emit('connection-success',{
+            clientId:client.id,
+            existProducer:this.producer?true:false
+        });
+       
 
-       this.router =  await this.videoStreamService.createRouter();
+
      
     }
 
@@ -36,13 +40,22 @@ export class VideoStreamGateway implements OnGatewayInit, OnGatewayConnection, O
     }
 
 
+    @SubscribeMessage('createRoom')
+    async createRoom(client:Socket,data:any,callback){
+        if (this.router === undefined){
+            this.router =  await this.videoStreamService.createRouter();
+            console.log('Router Id: ',this.router.id);
+        }
 
+        return await this.getRtpCapabilities(callback)
+    }
 
     @SubscribeMessage('getRtpCapabilities')
-    getRtpCapabilities(client:Socket,data?:any){
+    async getRtpCapabilities(callback?:any){
         const rtpCapabilities = this.videoStreamService.router.rtpCapabilities;
         console.log('Router RTP Capabilities: ',rtpCapabilities)
-        return rtpCapabilities;
+
+        return (rtpCapabilities) 
         
     }
 
@@ -93,7 +106,7 @@ export class VideoStreamGateway implements OnGatewayInit, OnGatewayConnection, O
  
 
     @SubscribeMessage('consume')
-    async consume(client:Socket,{rtpCapabilities},callback){
+    async consume(client:Socket,{rtpCapabilities},callback:Function){
       
         try {
             console.log('el router',this.router)
@@ -124,7 +137,7 @@ export class VideoStreamGateway implements OnGatewayInit, OnGatewayConnection, O
                     kind: this.consumer.kind,
                     rtpParameters: this.consumer.rtpParameters
                 }
-                return { params }
+                return({ params }) 
             }
 
             

@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import  * as mediasoup  from 'mediasoup'
+import * as process from 'process'
 const mediaCodecs = [
     {
         kind: 'audio',
@@ -14,12 +16,20 @@ const mediaCodecs = [
         parameters:{
             'x-google-start-bitrate': 1000,
         }
-    }
+    },
+    {
+        kind: 'video',
+        mimeType: 'video/VP8',
+        clockRate: 90000,
+        parameters: {
+          'x-google-start-bitrate': 1000,
+        },
+      },
 ]
 @Injectable()
 export class VideoStreamService {
 
-    constructor() { }
+    constructor(private configService: ConfigService) { }
     public worker
     public router
     
@@ -53,12 +63,13 @@ export class VideoStreamService {
             const webRtcTransport_options = {
                 listenIps:[{
                     ip:'0.0.0.0',
-                    announcedIp:'52.59.146.96'
+                    announcedIp:this.configService.get('RTC_ANNOUNCED_IP')
                 }],
                 enableUdp:true,
                 enableTcp:true,
                 preferUdp:true,
             }
+         
 
             let transport = await this.router.createWebRtcTransport(webRtcTransport_options)
             console.log('is this a sender request?', data.sender)

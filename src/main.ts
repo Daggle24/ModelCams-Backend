@@ -30,6 +30,9 @@ async function bootstrap() {
       rejectUnauthorized:false
     }});
 
-  await app.listen(8443);
+  await app.listen(process.env.PORT);
+  console.log(process.env.NODE_ENV)
+  console.log(`${process.cwd()}/config/dev.env`)
+  console.log('Listening on port: ', process.env.PORT)
 }
 bootstrap();
